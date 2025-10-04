@@ -16,9 +16,15 @@ final class TestResultCollector
         $this->projectRoot = rtrim($projectRoot, DIRECTORY_SEPARATOR);
     }
 
-    public function addTestResult($test, string $state, ?string $message = null): void
+    public function addTestResult(\PHPUnit\Event\Code\Test $test, string $state, ?string $message = null): void
     {
         $testName = $test->name();
+
+        // Only TestMethod has className(), not the base Test class
+        if (!$test instanceof \PHPUnit\Event\Code\TestMethod) {
+            return;
+        }
+
         $className = $test->className();
         $fullName = $className . '::' . $testName;
 
@@ -36,9 +42,13 @@ final class TestResultCollector
 
         try {
             $reflection = new \ReflectionClass($className);
-            $moduleId = $this->getRelativePath($reflection->getFileName());
+            $fileName = $reflection->getFileName();
+            if ($fileName === false) {
+                throw new \ReflectionException('Could not get file name');
+            }
+            $moduleId = $this->getRelativePath($fileName);
         } catch (\ReflectionException $e) {
-            $moduleId = str_replace('\\', '/', (string) $className) . '.php';
+            $moduleId = str_replace('\\', '/', $className) . '.php';
         }
 
         $this->testResults[] = [
@@ -56,7 +66,7 @@ final class TestResultCollector
         }
 
         $cwd = getcwd();
-        if (str_starts_with($absolutePath, $cwd)) {
+        if ($cwd !== false && str_starts_with($absolutePath, $cwd)) {
             $relativePath = substr($absolutePath, strlen($cwd) + 1);
 
             return str_replace(DIRECTORY_SEPARATOR, '/', $relativePath);
@@ -100,6 +110,11 @@ final class TestResultCollector
             'reason' => $hasFailures ? 'failed' : 'passed',
         ];
 
-        $this->storage->saveTest(json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $json = json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if ($json === false) {
+            throw new \RuntimeException('Failed to encode test results as JSON');
+        }
+
+        $this->storage->saveTest($json);
     }
 }

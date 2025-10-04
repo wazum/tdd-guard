@@ -10,7 +10,11 @@ final class Storage
 
     public function __construct(string $projectRoot = '')
     {
-        $this->projectRoot = PathValidator::resolveProjectRoot($projectRoot);
+        $resolvedRoot = PathValidator::resolveProjectRoot($projectRoot);
+        if ($resolvedRoot === false) {
+            throw new \RuntimeException('Could not determine project root directory');
+        }
+        $this->projectRoot = $resolvedRoot;
     }
 
     public function saveTest(string $content): void

@@ -2,10 +2,24 @@
 
 PHPUnit reporter that captures test results for TDD Guard validation.
 
+## Compatibility
+
+### Supported Versions
+
+| PHPUnit Version | Min PHP | CI Testing | Status |
+|----------------|---------|------------|--------|
+| 12.x | 8.3 | ✅ | Fully Supported & Tested |
+| 11.x | 8.2 | ✅ | Fully Supported & Tested |
+| 10.x | 8.1 | ✅ | Fully Supported & Tested |
+
+**Tested PHP Versions**: 8.1, 8.2, 8.3, 8.4
+
+All combinations are tested in CI across the compatibility matrix.
+
 ## Requirements
 
 - PHP 8.1+
-- PHPUnit 9.0+ or 10.0+ or 11.0+
+- PHPUnit 10.0+
 - [TDD Guard](https://github.com/nizos/tdd-guard) installed globally
 
 ## Installation
@@ -15,8 +29,6 @@ composer require --dev tdd-guard/phpunit
 ```
 
 ## Configuration
-
-### PHPUnit 10+ Configuration
 
 Add the extension to your `phpunit.xml`:
 
@@ -30,35 +42,12 @@ Add the extension to your `phpunit.xml`:
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    
+
     <extensions>
         <bootstrap class="TddGuard\PHPUnit\TddGuardExtension">
             <parameter name="projectRoot" value="/absolute/path/to/project/root"/>
         </bootstrap>
     </extensions>
-</phpunit>
-```
-
-### PHPUnit 9.x Configuration
-
-Add the listener to your `phpunit.xml`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php">
-    <testsuites>
-        <testsuite name="Application Test Suite">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
-    
-    <listeners>
-        <listener class="TddGuard\PHPUnit\TddGuardListener">
-            <arguments>
-                <string>/absolute/path/to/project/root</string>
-            </arguments>
-        </listener>
-    </listeners>
 </phpunit>
 ```
 

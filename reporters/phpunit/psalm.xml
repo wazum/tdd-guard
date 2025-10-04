@@ -23,22 +23,9 @@
                 <directory name="tests" />
             </errorLevel>
         </PropertyNotSetInConstructor>
-        <MissingConstructor>
-            <errorLevel type="suppress">
-                <directory name="tests" />
-            </errorLevel>
-        </MissingConstructor>
-        <UnusedClass>
-            <errorLevel type="suppress">
-                <directory name="tests" />
-            </errorLevel>
-        </UnusedClass>
-        
-        <!-- PHPUnit 9.x compatibility - TestListener interface was removed in PHPUnit 10 -->
-        <UndefinedClass>
-            <errorLevel type="suppress">
-                <referencedClass name="PHPUnit\Framework\TestListener" />
-            </errorLevel>
-        </UndefinedClass>
+
+        <!-- Suppress MissingOverrideAttribute for PHP 8.1/8.2 compatibility -->
+        <!-- The Override attribute is only available in PHP 8.3+ -->
+        <MissingOverrideAttribute errorLevel="suppress" />
     </issueHandlers>
 </psalm>

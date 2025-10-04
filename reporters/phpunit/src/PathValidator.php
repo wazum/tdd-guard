@@ -6,7 +6,10 @@ namespace TddGuard\PHPUnit;
 
 final class PathValidator
 {
-    public static function resolveProjectRoot(string $configuredRoot): string
+    /**
+     * @return false|string
+     */
+    public static function resolveProjectRoot(string $configuredRoot): string|false
     {
         if ($configuredRoot !== '') {
             $validated = self::validateProjectRoot($configuredRoot);
@@ -53,7 +56,12 @@ final class PathValidator
             return null;
         }
 
-        $cwd = realpath(getcwd());
+        $cwdRaw = getcwd();
+        if ($cwdRaw === false) {
+            return null;
+        }
+
+        $cwd = realpath($cwdRaw);
         if ($cwd === false) {
             return null;
         }

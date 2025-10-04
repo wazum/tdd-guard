@@ -66,7 +66,9 @@ class ExampleTest extends TestCase {
         $this->assertEquals(0, $returnCode, 'PHPUnit should exit with 0. Output: ' . implode("\n", $output));
         $jsonPath = $this->tempDir . '/.claude/tdd-guard/data/test.json';
         $this->assertFileExists($jsonPath);
-        $data = json_decode(file_get_contents($jsonPath), true);
+        $jsonContent = file_get_contents($jsonPath);
+        $this->assertNotFalse($jsonContent, 'Failed to read JSON file');
+        $data = json_decode($jsonContent, true);
         $this->assertArrayHasKey('testModules', $data);
         $this->assertCount(1, $data['testModules']);
         $this->assertArrayHasKey('reason', $data);

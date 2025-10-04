@@ -28,6 +28,11 @@ final class TddGuardExtension implements Extension
     {
         $configuredRoot = $parameters->has('projectRoot') ? $parameters->get('projectRoot') : '';
 
-        return PathValidator::resolveProjectRoot($configuredRoot);
+        $resolvedRoot = PathValidator::resolveProjectRoot($configuredRoot);
+        if ($resolvedRoot === false) {
+            throw new \RuntimeException('Could not determine project root directory');
+        }
+
+        return $resolvedRoot;
     }
 }

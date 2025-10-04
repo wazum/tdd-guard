@@ -191,10 +191,87 @@ jobs:
       - name: Run reporter tests
         run: npm run test:reporters
 
+  phpunit-compatibility:
+    name: PHPUnit Compatibility Matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # PHPUnit 10 (PHP 8.1+)
+          - php: '8.1'
+            phpunit: '^10.0'
+          - php: '8.2'
+            phpunit: '^10.0'
+          - php: '8.3'
+            phpunit: '^10.0'
+          - php: '8.4'
+            phpunit: '^10.0'
+          # PHPUnit 11 (PHP 8.2+)
+          - php: '8.2'
+            phpunit: '^11.0'
+          - php: '8.3'
+            phpunit: '^11.0'
+          - php: '8.4'
+            phpunit: '^11.0'
+          # PHPUnit 12 (PHP 8.3+)
+          - php: '8.3'
+            phpunit: '^12.0'
+          - php: '8.4'
+            phpunit: '^12.0'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          extensions: mbstring, xml, json
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        working-directory: reporters/phpunit
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-php${{ matrix.php }}-phpunit${{ matrix.phpunit }}-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-php${{ matrix.php }}-
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies (PHPUnit ${{ matrix.phpunit }})
+        working-directory: reporters/phpunit
+        run: |
+          composer require --no-update "phpunit/phpunit:${{ matrix.phpunit }}"
+          composer install --no-progress --no-interaction
+
+      - name: Run PHPUnit tests
+        working-directory: reporters/phpunit
+        run: composer test
+
+      - name: Display PHPUnit version
+        working-directory: reporters/phpunit
+        run: vendor/bin/phpunit --version
+
   all-checks-pass:
     name: All Checks Pass
     runs-on: ubuntu-latest
-    needs: [format, lint, typecheck, unit-tests, reporter-tests]
+    needs:
+      [
+        format,
+        lint,
+        typecheck,
+        unit-tests,
+        reporter-tests,
+        phpunit-compatibility,
+      ]
     steps:
       - name: All checks passed
         run: echo "All CI checks passed successfully!"
