@@ -27,6 +27,8 @@ export interface TestModifications {
   emptyTestContainer: TestData
   emptyTestContainerWithImports: TestData
   refactoredTests: TestData
+  testsIncludingDeadCode: TestData
+  testsWithoutDeadCode: TestData
 }
 
 // Implementation modification types
@@ -38,6 +40,8 @@ export interface ImplementationModifications {
   methodImplementation: TestData
   overEngineered: TestData
   completeClass: TestData
+  withDeadCode: TestData
+  withoutDeadCode: TestData
 }
 
 // Todo state types

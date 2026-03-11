@@ -40,6 +40,38 @@ You are reviewing a MultiEdit operation where multiple edits are being applied t
    - But this doesn't justify multiple new tests
    - Each edit should still follow minimal implementation
 
+### Refactor Phase in MultiEdit
+
+**PREREQUISITE** — Both conditions must be met before allowing refactoring:
+1. The test output must contain tests **for the code being modified** (not just any passing tests). If the test output only covers unrelated modules, block — there is no evidence the changed code is tested.
+2. ALL tests in the output must be passing. If ANY test is failing, block — even if the failing tests seem unrelated to the change.
+
+If either condition is not met, block and instruct the developer to run the relevant tests first.
+
+When both conditions are met, refactoring across multiple edits in the same file is allowed.
+Refactoring changes code structure while preserving identical observable behavior.
+
+#### Implementation File Refactoring
+- Multiple edits that restructure, rename, or clean up code within the same file
+- Removing unused/dead code (methods, functions, classes no longer called)
+- Extracting methods/functions into new locations within the file
+
+For dead code removal, the relevant tests are those for the code that *remains* in the file. If those tests pass, removing unused code is safe.
+
+#### Test File Refactoring
+- Multiple edits that restructure test setup or helpers
+- Removing tests for code that no longer exists (dead code cleanup, not coverage reduction)
+
+#### When refactoring is not the right phase:
+- Adding new behavior or features requires a failing test first (start a new red phase)
+- Changing observable behavior requires a failing test that specifies the new behavior
+
+**Example - Valid refactoring via MultiEdit:**
+- Test output: All Calculator tests passing
+- Edit 1: Renames \`_internalCalc\` method to \`computeResult\`
+- Edit 2: Updates all callers of the renamed method within the same file
+- Analysis: Rename refactoring with passing tests, behavior preserved → Allow
+
 ### Example MultiEdit Analysis
 
 **Edit 1**: Adds empty Calculator class

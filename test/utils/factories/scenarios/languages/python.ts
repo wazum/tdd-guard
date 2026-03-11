@@ -293,6 +293,30 @@ class TestCalculator:
         assert result == 6
 `,
   },
+  testsIncludingDeadCode: {
+    description: 'tests including dead code',
+    content: `import pytest
+from calculator import Calculator
+
+def test_adds_two_numbers():
+    calculator = Calculator()
+    assert calculator.add(2, 2) == 4
+
+def test_old_adds_two_numbers():
+    calculator = Calculator()
+    assert calculator.old_add(2, 2) == 4
+`,
+  },
+  testsWithoutDeadCode: {
+    description: 'tests without dead code',
+    content: `import pytest
+from calculator import Calculator
+
+def test_adds_two_numbers():
+    calculator = Calculator()
+    assert calculator.add(2, 2) == 4
+`,
+  },
 } as const
 
 // Python implementation modifications
@@ -324,6 +348,23 @@ export const implementationModifications = {
   },
   methodImplementation: {
     description: 'implementing method',
+    content: `class Calculator:
+    def add(self, a: int, b: int) -> int:
+        return a + b
+`,
+  },
+  withDeadCode: {
+    description: 'implementation with dead code',
+    content: `class Calculator:
+    def add(self, a: int, b: int) -> int:
+        return a + b
+
+    def old_add(self, a: int, b: int) -> int:
+        return a + b
+`,
+  },
+  withoutDeadCode: {
+    description: 'implementation without dead code',
     content: `class Calculator:
     def add(self, a: int, b: int) -> int:
         return a + b

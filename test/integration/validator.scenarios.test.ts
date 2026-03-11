@@ -314,6 +314,80 @@ describe('Validator', () => {
             })
           })
         })
+
+        describe('Removing dead code and tests', () => {
+          describe('Removing dead code from implementation with passing tests', () => {
+            const oldContent = implementationModifications.withDeadCode
+            const newContent = implementationModifications.withoutDeadCode
+
+            // Should be allowed when tests are passing
+            testOperations(
+              {
+                filePath: implementationFile,
+                oldContent,
+                newContent,
+                todos: todos.refactoring,
+                testResult: testResults.passing,
+                violation: false,
+              },
+              ['Edit', 'MultiEdit']
+            )
+          })
+
+          describe('Removing tests for dead code with passing tests', () => {
+            const oldContent = testModifications.testsIncludingDeadCode
+            const newContent = testModifications.testsWithoutDeadCode
+
+            // Should be allowed when tests are passing
+            testOperations(
+              {
+                filePath: testFile,
+                oldContent,
+                newContent,
+                todos: todos.refactoring,
+                testResult: testResults.passing,
+                violation: false,
+              },
+              ['Edit', 'MultiEdit']
+            )
+          })
+
+          describe('Removing tests while tests are failing', () => {
+            const oldContent = testModifications.testsIncludingDeadCode
+            const newContent = testModifications.testsWithoutDeadCode
+
+            // Should be blocked when tests are failing
+            testOperations(
+              {
+                filePath: testFile,
+                oldContent,
+                newContent,
+                todos: todos.refactoring,
+                testResult: testResults.assertionError,
+                violation: true,
+              },
+              ['Edit', 'MultiEdit']
+            )
+          })
+
+          describe('Removing dead code without test evidence', () => {
+            const oldContent = implementationModifications.withDeadCode
+            const newContent = implementationModifications.withoutDeadCode
+
+            // Should be blocked without test output
+            testOperations(
+              {
+                filePath: implementationFile,
+                oldContent,
+                newContent,
+                todos: todos.refactoring,
+                testResult: testResults.empty,
+                violation: true,
+              },
+              ['Edit', 'MultiEdit']
+            )
+          })
+        })
       })
 
       describe('TDD Violations', () => {

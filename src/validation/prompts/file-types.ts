@@ -21,6 +21,7 @@ export const FILE_TYPES = `## File Type Specific Rules
 - ONLY allowed when relevant tests are passing
 - Moving test setup to beforeEach: Requires passing tests
 - Extracting test helpers: Requires passing tests
+- Removing tests for code that no longer exists: Allowed when tests are passing (this is dead code cleanup, not coverage reduction)
 - Blocked if tests are failing, no test output, or only irrelevant test output
 
 **For test refactoring**: "Relevant tests" are the tests in the file being refactored

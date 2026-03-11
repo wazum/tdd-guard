@@ -282,6 +282,39 @@ describe('Calculator', () => {
   })
 `,
   },
+  testsIncludingDeadCode: {
+    description: 'tests including dead code',
+    content: `
+import { describe, test, expect } from 'vitest'
+import { Calculator } from './Calculator'
+
+describe('Calculator', () => {
+  test('add() adds two numbers', () => {
+    const calculator = new Calculator();
+    expect(calculator.add(2, 2)).toBe(4);
+  })
+
+  test('oldAdd() adds two numbers', () => {
+    const calculator = new Calculator();
+    expect(calculator.oldAdd(2, 2)).toBe(4);
+  })
+})
+`,
+  },
+  testsWithoutDeadCode: {
+    description: 'tests without dead code',
+    content: `
+import { describe, test, expect } from 'vitest'
+import { Calculator } from './Calculator'
+
+describe('Calculator', () => {
+  test('add() adds two numbers', () => {
+    const calculator = new Calculator();
+    expect(calculator.add(2, 2)).toBe(4);
+  })
+})
+`,
+  },
 } as const
 
 // Implementation modifications
@@ -319,6 +352,30 @@ export class Calculator {
   },
   methodImplementation: {
     description: 'implementing method',
+    content: `
+export class Calculator {
+  add(a: number, b: number): number {
+    return a + b;
+  }
+}
+`,
+  },
+  withDeadCode: {
+    description: 'implementation with dead code',
+    content: `
+export class Calculator {
+  add(a: number, b: number): number {
+    return a + b;
+  }
+
+  oldAdd(a: number, b: number): number {
+    return a + b;
+  }
+}
+`,
+  },
+  withoutDeadCode: {
+    description: 'implementation without dead code',
     content: `
 export class Calculator {
   add(a: number, b: number): number {
